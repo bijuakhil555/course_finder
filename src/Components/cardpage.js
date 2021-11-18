@@ -1,14 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
 import SearchContext from '../Context/searchContext';
 import Card   from "./card";
-
-import axios from '../Fetch/axios'
 import ReactPaginate from 'react-paginate';
 import Barchart from './barchart';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import { Button, Menu, MenuItem } from '@mui/material';
+import { useSelector } from 'react-redux';
 
 function Cardpage() {
+
+    const reduxState = useSelector(state => state.subjects)
+    console.log(reduxState)
+
+
     const ctx = useContext(SearchContext)
     const includeCourse = ['Course Name']
     const includeChild = ['Child Subject']
@@ -24,26 +28,20 @@ function Cardpage() {
     
 
     useEffect(() => {
-       async function fetchData(){
-           setLoading(true)
-           const request = await axios.get()
-           const dataList = []
-           for(var i =0; i<500;i++){
-                dataList.push(request.data[i])
-           }
-           
-           setNewcourse(dataList)
+        if(reduxState) {
+            
+            setNewcourse(reduxState.slice(0,500));}
+
+            const dataList = reduxState.slice(0,500)
 
 // ADDING COMPLETE PARENT SUBJECT TO A STATE
-        //    setParent(dataList.map(res=>{return res['Parent Subject']}))
            setUniversity(dataList.map(res=>{return res['Universities/Institutions']}))
 
            
-           setLoading(false)
-       }
-       fetchData()
+         
+      
        
-    }, [])
+    }, [reduxState])
 
  
 
@@ -198,18 +196,6 @@ function Cardpage() {
 
     return (
         <div>
-            
-            
-
-                {/* <div class="dropdown">
-                <button class="dropbtn">Graph</button>
-                <div class="dropdown-content">
-                    <a onClick={isParent}>Parent subject</a>
-                    <a onClick={isUniversity}>University</a>
-                   
-                </div>
-                </div> */}
-            
             <h5 className="headcard" >Total course : {numRows}</h5>
 
             {loading ? loadingSnippet() :noCourse()  }
